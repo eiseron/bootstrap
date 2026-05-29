@@ -1,0 +1,36 @@
+services:
+  __APP_NAME__:
+    image: registry.gitlab.com/eiseron/stack/public-image-bases/elixir-tools:v0.1.0
+    tty: true
+    stdin_open: true
+    working_dir: /usr/src/__APP_NAME__
+    ports:
+      - 4000:4000
+    volumes:
+      - ./:/usr/src/__APP_NAME__
+      - elixir_build:/usr/src/__APP_NAME__/_build
+    command: sh -c "mix deps.get && mix phx.server"
+    environment:
+      DB_NAME: __APP_NAME___dev
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASS: postgres
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: __APP_NAME___dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d __APP_NAME___dev"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+volumes:
+  postgres_data:
+  elixir_build:

@@ -1,0 +1,14 @@
+include:
+  - project: eiseron/stack/ci
+    file: /templates/phoenix.yml
+    ref: v0.1.0
+    inputs:
+      app_name: __APP_NAME__
+  - project: eiseron/stack/ci
+    file: /templates/sync-github.yml
+    ref: v0.1.0
+
+stages:
+  - lint
+  - test
+  - sync
