@@ -20,7 +20,7 @@ Or clone and run locally:
 
 ```
 <app_name>/
-  compose.yml             app (pulls the shared elixir-tools image) + postgres
+  compose.yml             remote OCI include of the shared compose-phoenix stack
   mix.exs                 phx.new output + eiseron_core/eiseron_devtools deps
   .gitlab-ci.yml          includes eiseron/stack/ci /templates/phoenix.yml + sync-github
   .credo.exs              Eiseron Credo standard
@@ -28,9 +28,11 @@ Or clone and run locally:
   ... (rest of mix phx.new output)
 ```
 
-No per-project `Dockerfile`: `compose.yml` pulls the published dev image
-`registry.gitlab.com/eiseron/stack/public-image-bases/elixir-tools:v0.1.0`. CI is
-a thin `include:` of the shared `eiseron/stack/ci` template, pinned by tag.
+Both `compose.yml` and `.gitlab-ci.yml` are thin, tag-pinned references to
+shared infra — no infrastructure is duplicated into the project:
+- `compose.yml` → `include: [oci://…/public-image-bases/compose-phoenix:vX.Y.Z]`
+  (the `app`+`postgres` dev stack, pulling the published `elixir-tools` image)
+- `.gitlab-ci.yml` → `include:` of `eiseron/stack/ci` templates, pinned by tag
 
 ## How it works
 

@@ -38,12 +38,16 @@ done
 for f in compose.yml .gitlab-ci.yml .credo.exs .formatter.exs; do
   grep -q "__APP_NAME__" "$f" && fail "unsubstituted placeholder in $f"
 done
-grep -q "afinados" compose.yml || fail "app name not substituted into compose.yml"
+grep -q "app_name: afinados" .gitlab-ci.yml || fail "app name not substituted into .gitlab-ci.yml"
 
-# compose references the published dev image (no local build).
-grep -q "image: registry.gitlab.com/eiseron/stack/public-image-bases/elixir-tools:v0.1.0" compose.yml \
-  || fail "compose.yml does not reference the published elixir-tools image"
+# compose is a remote OCI include of the shared Phoenix dev stack (no local
+# services/build/image — those live in the versioned compose-phoenix artifact).
+grep -q "oci://registry.gitlab.com/eiseron/stack/public-image-bases/compose-phoenix:v0.1.1" compose.yml \
+  || fail "compose.yml does not include the compose-phoenix OCI artifact"
+grep -q "project_directory: \\." compose.yml \
+  || fail "include is missing project_directory: . (relative paths in the artifact would resolve to the OCI cache, not the project)"
 grep -q "dockerfile:" compose.yml && fail "compose.yml should not build a local image"
+grep -qE "^services:" compose.yml && fail "compose.yml should not define services locally"
 
 # CI includes the shared stack/ci templates pinned to a tag.
 grep -q "file: /templates/phoenix.yml" .gitlab-ci.yml || fail ".gitlab-ci.yml does not include phoenix.yml"
