@@ -76,13 +76,13 @@ main() {
   render_all "$app_name"
 
   echo "Generating Phoenix project..."
-  docker compose run --rm "$app_name" mix phx.new . --app "$app_name" --no-install
+  docker compose run --rm app mix phx.new . --app "$app_name" --no-install
 
   echo "Injecting eiseron dependencies into mix.exs..."
   inject_deps mix.exs
 
   echo "Fetching dependencies..."
-  docker compose run --rm "$app_name" mix deps.get
+  docker compose run --rm app mix deps.get
 
   echo ""
   echo "Done! Next steps:"
@@ -90,7 +90,7 @@ main() {
   echo "  2. git init && git add -A && git commit -m 'chore: bootstrap'"
   echo "  3. git remote add origin git@gitlab.com:eiseron/<group>/$app_name.git"
   echo "  4. git push -u origin main"
-  echo "  5. docker compose run --rm $app_name mix ecto.setup"
+  echo "  5. docker compose run --rm app mix ecto.setup"
   echo "  6. docker compose up"
 }
 
