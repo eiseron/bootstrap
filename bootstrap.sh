@@ -76,7 +76,7 @@ main() {
   render_all "$app_name"
 
   echo "Generating Phoenix project..."
-  docker compose run --rm app mix phx.new . --app "$app_name" --no-install
+  docker compose run --rm app sh -c "mix archive.install --force hex phx_new && mix phx.new . --app $app_name --no-install"
 
   echo "Injecting eiseron dependencies into mix.exs..."
   inject_deps mix.exs
