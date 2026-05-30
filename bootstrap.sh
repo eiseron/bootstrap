@@ -45,14 +45,6 @@ inject_deps() {
   ' "$mix_file" > "$mix_file.tmp" && mv "$mix_file.tmp" "$mix_file"
 }
 
-render_all() {
-  local app="$1"
-  render compose.yml compose.yml "$app"
-  render gitlab-ci.yml .gitlab-ci.yml "$app"
-  render credo.exs .credo.exs "$app"
-  render formatter.exs .formatter.exs "$app"
-}
-
 main() {
   set -euo pipefail
 
@@ -72,11 +64,16 @@ main() {
   mkdir "$app_name"
   cd "$app_name"
 
-  echo "Rendering templates..."
-  render_all "$app_name"
+  echo "Rendering compose.yml (needed before phx.new can run)..."
+  render compose.yml compose.yml "$app_name"
 
   echo "Generating Phoenix project..."
-  docker compose run --rm app sh -c "mix archive.install --force hex phx_new && mix phx.new . --app $app_name --no-install"
+  docker compose run -T --rm app sh -c "mix archive.install --force hex phx_new && yes | mix phx.new . --app $app_name --no-install"
+
+  echo "Rendering eiseron templates (override phx.new defaults)..."
+  render gitlab-ci.yml .gitlab-ci.yml "$app_name"
+  render credo.exs .credo.exs "$app_name"
+  render formatter.exs .formatter.exs "$app_name"
 
   echo "Injecting eiseron dependencies into mix.exs..."
   inject_deps mix.exs

@@ -24,7 +24,10 @@ if validate_app_name "1bad"; then fail "name with leading digit accepted"; fi
 if validate_app_name "Bad"; then fail "name with uppercase accepted"; fi
 if validate_app_name ""; then fail "empty name accepted"; fi
 
-render_all afinados
+render compose.yml compose.yml afinados
+render gitlab-ci.yml .gitlab-ci.yml afinados
+render credo.exs .credo.exs afinados
+render formatter.exs .formatter.exs afinados
 
 # Every template rendered to its target path.
 for f in compose.yml .gitlab-ci.yml .credo.exs .formatter.exs; do
@@ -42,7 +45,7 @@ grep -q "app_name: afinados" .gitlab-ci.yml || fail "app name not substituted in
 
 # compose is a remote OCI include of the shared Phoenix dev stack (no local
 # services/build/image — those live in the versioned compose-phoenix artifact).
-grep -q "oci://registry.gitlab.com/eiseron/stack/public-image-bases/compose-phoenix:v0.1.1" compose.yml \
+grep -q "oci://registry.gitlab.com/eiseron/stack/public-image-bases/compose-phoenix:v0.1.2" compose.yml \
   || fail "compose.yml does not include the compose-phoenix OCI artifact"
 grep -q "project_directory: \\." compose.yml \
   || fail "include is missing project_directory: . (relative paths in the artifact would resolve to the OCI cache, not the project)"
