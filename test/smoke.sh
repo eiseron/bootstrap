@@ -45,7 +45,7 @@ grep -q "app_name: afinados" .gitlab-ci.yml || fail "app name not substituted in
 
 # compose is a remote OCI include of the shared Phoenix dev stack (no local
 # services/build/image — those live in the versioned compose-phoenix artifact).
-grep -q "oci://registry.gitlab.com/eiseron/stack/public-image-bases/compose-phoenix:v0.1.2" compose.yml \
+grep -q "oci://registry.gitlab.com/eiseron/stack/public-image-bases/compose-phoenix:v0.1.3" compose.yml \
   || fail "compose.yml does not include the compose-phoenix OCI artifact"
 grep -q "project_directory: \\." compose.yml \
   || fail "include is missing project_directory: . (relative paths in the artifact would resolve to the OCI cache, not the project)"
