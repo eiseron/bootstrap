@@ -1,6 +1,14 @@
+# Version-driven release tagging: bump VERSION on main and the release-tag
+# job creates the matching git tag. Tags are never created by hand.
+include:
+  - project: eiseron/stack/ci
+    file: /templates/release.yml
+    ref: v0.1.2
+
 stages:
   - test
   - sync
+  - release
 
 workflow:
   rules:
